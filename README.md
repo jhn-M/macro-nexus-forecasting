@@ -1,42 +1,86 @@
-# Forecasting Macroeconomic Trends: The Nexus of Exchange Rates, Energy, and CPI
+# Title: Forecasting Macroeconomic Trends: The Nexus of Exchange Rates, Energy, and CPI Hybrid SARIMA + Machine Learning model: Forecasting Philippine inflation using oil prices, USD-PHP exchange rates, and NLP sentiment scores from financial news.
 
-> **Note: This project is currently IN PROGRESS.** 🚧
-> Data ingestion and architectural design are complete. I am currently refining the Hybrid ARIMA-Random Forest integration and optimizing the NLP sentiment pipeline.
+**Status:** In Progress — Correction Layer Development
 
-## **Project Overview**
-This project develops a **multi-stage hybrid forecasting system** to predict Philippine inflation (Consumer Price Index). Traditional statistical models often struggle with "shocks"—sudden price jumps caused by global events or currency fluctuations. To solve this, I’ve engineered a pipeline that combines the reliability of **time-series econometrics (ARIMA)** with the pattern-recognition power of **Machine Learning (Random Forest)** and the sentiment-awareness of **Natural Language Processing (NLP)**.
+## Problem Statement
+Inflation forecasting is critical for banks, financial institutions, and market participants making forward-looking decisions, yet most univariate models fail to capture the external shocks that drive sudden price movements. This project builds a hybrid SARIMA model corrected by machine learning using macroeconomic indicators — Brent crude oil prices, USD-PHP exchange rates, and NLP sentiment scores derived from financial news headlines — to forecast Philippine inflation one to several months ahead. A key limitation of this approach is that while sentiment and oil prices exhibit high daily volatility that likely influences inflation, BSP reports inflation monthly, forcing all features to be aggregated at the monthly level and potentially losing granular signal in the process.
 
----
+## Architecture Overview
+The following steps are structured to create the final Model to forecast Inflation Rates:
 
-## **The Hybrid Methodology**
-To capture the "Nexus" of factors affecting the Philippine economy, the project follows a four-pillar technical strategy:
+**Step 1: Scrape Data:**
+- 1.1  Scrape Headlines in Business world Headlines Using BeautifulSoup while Enforcing it with ThreadPoolExecutor to make it scrape faster.
+- 1.2 Get the Inflation rates from BSP while Oil brent and USD PHP exchange can get using yfinance library
 
-### **1. Statistical Baseline: ARIMA/SARIMA**
-*   **Role:** Captures the internal "memory" of inflation.
-*   **Function:** Utilizes ARIMA to model the historical trend and seasonality of the Bangko Sentral ng Pilipinas (BSP) inflation data. This provides a clean baseline forecast based solely on previous price behavior.
+**Step 2: Clean Data**
+- 2.1. Removing unnecessary symbols to headlines
+- 2.2. removing stop words
+- 2.3.  Remove NaNs for exogeneous variables
+- 2.4. Make sure to apply correct time stamps by lagging or leading the data after using rolling mean to make sure there is no leakage.
 
-### **2. Residual Correction: Random Forest (RF) Regression**
-*   **Role:** Explains what the statistical model missed.
-*   **Function:** Since ARIMA is often "blind" to external shocks, I train a **Random Forest Regressor** on the *residuals* (errors) of the ARIMA model. By using **USD-PHP exchange rates** and **Brent Crude Oil prices** as exogenous features, the RF learns to correct the forecast when energy costs spike or the Peso weakens.
+**Step 3: Modeling**
+- 3.1. Create ARIMA/SARIMA model varies on whether the data has seasonality or not 
+- 3.2. Then Create RF-Regression model and XG boost model to catch the non linearity of ARIMA/SARIMA.
+- 3.3. RF-Regression and XGBoost models are trained on SARIMA residuals to capture non-linear patterns the SARIMA cannot model. The correction model's output is added to the SARIMA forecast to produce the final hybrid prediction.
 
-### **3. Market Sentiment: Natural Language Processing (NLP)**
-*   **Role:** Quantifying the "mood" of the economy.
-*   **Function:** Economic data is often lagging. To get a real-time signal, I use NLP to analyze financial news headlines and BSP policy statements. By calculating **Sentiment Scores**, the model gains an "early warning" signal of upcoming inflationary pressure before it shows up in the official numbers.
+**Step 4: Evaluate the Models** 
+- 4.1. Evaluate the two model plus their ensemble model (aggregating the two model's result) to see which of the three performs well
+- 4.2 Then Create the final Model by integrating it to SARIMA results
 
-### **4. Directional Logic: Random Forest (RF) Classification**
-*   **Role:** Validating the trend.
-*   **Function:** Beyond just predicting a number, I implement an **RF Classifier** to predict the *direction* of the move (e.g., "Will inflation increase by more than 0.5% next month?"). This acts as a secondary validation layer for the regression results.
+**Step 5: Conclusion and Findings**
+- 5.1. State what the findings are. 
+- 5.2. Did the Multi Model performs better than ARIMA/SARIMA? 
+- 5.3. Did they successfully corrected the errors.
+- 5.4. What are the Limitations that the modeling encountered etc.
 
----
+## Data Sources
+- 1. **Inflation rates:** https://www.bsp.gov.ph/Statistics/Prices/tab34_inf_2018.aspx, Jan. 2021 - March 2026
+- 2. **USD/PHP: ticker:** USDPHP=X, Date range: Jan.2021-Mar.2026
+- 3. **Oil Brent: ticker:** BZ=F, Date range: Jan.2021-Mar.2026
+- 4. **Sentiment scores:** finBERT applied to financial headlines scraped from Business World Online (https://www.bworldonline.com/banking-finance/), Jan. 2021 - Mar. 2026
 
-## **Technical Stack**
-*   **Languages:** Python (Pandas, NumPy, Scikit-Learn)
-*   **Time-Series:** Statsmodels (ARIMA/SARIMA)
-*   **Machine Learning:** Random Forest (Regression & Classification)
-*   **NLP:** NLTK / VADER / Transformers (Sentiment Analysis)
-*   **Data Sources:** Bangko Sentral ng Pilipinas (BSP), FRED Economic Data, News APIs
+## Progress
 
----
+**Step 1: Scrape Data:**
+- ✅ 1.1  Scrape Headlines in Business world Headlines Using BeautifulSoup while Enforcing it with ThreadPoolExecutor to make it scrape faster.
+- ✅ 1.2 Get the Inflation rates from BSP while Oil brent and USD PHP exchange can get using yfinance library \
+ 
+**Step 2: Clean Data**
+- ✅2.1. Removing unnecessary symbols to headlines
+- ✅2.2. removing stop words
+- ✅2.3.  Remove NaNs for exogeneous variables
+- ✅2.4. Make sure to apply correct time stamps by lagging or leading the data after using rolling mean to make sure there is no leakage.
 
-## **Why This Project Matters**
-For an import-dependent country like the Philippines, inflation is driven by more than just domestic demand. By integrating **Exchange Rates** and **Energy** prices through a hybrid ML approach, this model provides a more resilient forecast than traditional methods, demonstrating a deep understanding of both data science and macroeconomic reality.
+**Step 3: Modeling**
+- ✅3.1. Create ARIMA/SARIMA model varies on whether the data has seasonality or not 
+- ⬜3.2. Then Create RF-Regression model and XG boost model to catch the non linearity of ARIMA/SARIMA.
+- ⬜3.3. RF-Regression and XGBoost models are trained on SARIMA residuals to capture non-linear patterns the SARIMA cannot model. The correction model's output is added to the SARIMA forecast to produce the final hybrid prediction.
+
+**Step 4: Evaluate the Models**
+- ⬜4.1. Evaluate the two model plus their ensemble model (aggregating the two model's result) to see which of the three performs well
+- ⬜4.2 Then Create the final Model by integrating it to SARIMA results
+ 
+**Step 5: Conclusion and Findings**
+- ⬜5.1. State what the findings are. 
+- ⬜5.2. Did the Multi Model performs better than ARIMA/SARIMA? 
+- ⬜5.3. Did they successfully corrected the errors.
+- ⬜5.4. What are the Limitations that the modeling encountered etc.
+
+## Tech Stack
+- **Language:** Python
+- **Data Analysis and Engineering:** Pandas, NumPy, Exploratory Data Analysis (EDA), Feature Engineering, Data Cleaning 
+- **Machine Learning:** Scikit-Learn, Random-Forest, Regression, XGboost, Model Evaluation 
+- **Time Series and Econometrics:** ARIMA, SARIMA, Forecasting, Residual Modeling, Stationary Testing (ADF), Seasonal Decomposition, Statsmodels 
+- **Natural Language Processing:** finBERT, Sentiment Analysis, Text Processing, Web Scraping(BeautifulSoup) 
+- **Visualization:** Matplotlib
+
+## Preliminary Results
+SARIMA baseline metrics on the test set **(MSE: 0.5099, RMSE: 0.7141, MAE: 0.4168)** reflect expected behavior for a univariate model on a volatile macro series — strong at short horizons, degrading over longer forecast windows. The correction layer using exogenous variables is expected to address this degradation, particularly during external shock periods.
+
+This plot shows how SARIMA captured perfectly the initial horizons as it struggles forecasting the volatility of inflation rates in the following months.
+<img width="2084" height="735" alt="prelimenary_plot" src="https://github.com/user-attachments/assets/8830adbe-2e6a-4260-b752-c4f482008cb5" />
+
+
+## Next Steps
+Currently building the model, applying direct step ahead prediction to random-forest to avoid its weakness (error propagation), along with XGboost, ensembling them to evaluate the three to see which performs better.
+
