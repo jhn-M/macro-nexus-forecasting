@@ -53,11 +53,11 @@ The following steps are structured to create the final Model to forecast Inflati
 
 **Step 3: Modeling**
 - ✅3.1. Create ARIMA/SARIMA model varies on whether the data has seasonality or not 
-- ⬜3.2. Then Create RF-Regression model and XG boost model to catch the non linearity of ARIMA/SARIMA.
-- ⬜3.3. RF-Regression and XGBoost models are trained on SARIMA residuals to capture non-linear patterns the SARIMA cannot model. The correction model's output is added to the SARIMA forecast to produce the final hybrid prediction.
+- ✅3.2. Then Create RF-Regression model and XG boost model to catch the non linearity of ARIMA/SARIMA.
+- ✅3.3. RF-Regression and XGBoost models are trained on SARIMA residuals to capture non-linear patterns the SARIMA cannot model. The correction model's output is added to the SARIMA forecast to produce the final hybrid prediction.
 
 **Step 4: Evaluate the Models**
-- ⬜4.1. Evaluate the two model plus their ensemble model (aggregating the two model's result) to see which of the three performs well
+- ✅4.1. Evaluate the two model plus their ensemble model (aggregating the two model's result) to see which of the three performs well
 - ⬜4.2 Then Create the final Model by integrating it to SARIMA results
  
 **Step 5: Conclusion and Findings**
@@ -79,6 +79,10 @@ SARIMA baseline metrics on the test set **(MSE: 0.5099, RMSE: 0.7141, MAE: 0.416
 
 This plot shows how SARIMA captured perfectly the initial horizons as it struggles forecasting the volatility of inflation rates in the following months.
 <img width="2084" height="735" alt="prelimenary_plot" src="https://github.com/user-attachments/assets/8830adbe-2e6a-4260-b752-c4f482008cb5" />
+
+This plot shows the model evaluation, highlighting how Hybrid Model corrects initial ARIMA forecast
+<img width="2084" height="735" alt="Model_evaluation_plot" src="https://github.com/user-attachments/assets/5fd88141-61d4-41c9-8d2e-1012c44a9095" />
+
 
 
 ## Next Steps
